@@ -33,3 +33,16 @@ Link : https://www.ohmsec.com.br/
 
 
 ## Github README PROFILE CATEGORY
+
+- [ ] [Art](art)
+- [ ] [Code Styled](code-styled)
+- [ ] [Creativity](creativity)
+- [ ] [Flowcharts](flowcharts)
+- [ ] [Default](default)
+- [ ] [Dynamic Realtime](dynamic-realtime)
+- [ ] [Elaborate](elaborate)
+- [ ] [Multimedia](multimedia)
+- [ ] [Short-and-sweet](short-and-sweet)
+- [ ] [Tabular](tabular)
+- [ ] [Pie Charts](pie-charts)
+
