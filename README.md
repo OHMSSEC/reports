@@ -29,7 +29,7 @@ List of `awesome README Profile` categories mentioned below
 
 Link : https://www.ohmsec.com.br/
 
-<a href="https://www.ohmsec.com.br/"><img src="https://raw.githubusercontent.com/elangosundar/awesome-README-templates/master/awesome-github-profile.png" alt="Awesome README Templates" /></a>
+<a href="https://www.ohmsec.com.br/"><img src=" alt="Awesome README Templates" /></a>
 
 
 ## Github README PROFILE CATEGORY
