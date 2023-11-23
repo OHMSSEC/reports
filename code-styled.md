@@ -49,13 +49,12 @@ No Java:
 
 Ataque
 
-Nesse ponto, você deve saber qual sistema de template está sendo usado para fazer o ataque e ser capaz de prosseguir em busca de vulnerabilidades exploráveis. É importante abordar isso no contexto do aplicativo mais amplo, algumas funções que podem ser usadas para explorar recursos específicos do aplicativo. Abaixo estão as payloads, acionando a criação de objeto arbitrário, leitura/gravação de arquivo arbitrário, inclusão de arquivo remoto, divulgação de informações e vulnerabilidades de escalamento de privilégio.
+Nesse ponto, você deve saber qual sistema de template está sendo usado para fazer o ataque e ser capaz de prosseguir em busca de vulnerabilidades exploráveis. É importante abordar isso no contexto do aplicativo mais amplo, algumas funções que podem ser usadas para explorar recursos específicos do aplicativo. Abaixo estão as payloads, acionando a criação de objeto arbitrário, leitura/gravação de arquivo arbitrário, inclusão de arquivo remoto, divulgação de informações e vulnerabilidades de escalamento de privilégio.;
 
     Ruby
 
 Injeções básicas em ERB:
-
-   <%= 7 * 7 %>
+      <%= 7 * 7 %>;
 
 - Injeções básicas em ERB
 
