@@ -1,4 +1,4 @@
-<h1 align="center">Reports</h1>
+<h1 align="center">SSTI - Server Side Template Injection</h1>
 <p align="center"><h3<i>OHMS<a style="width: 100; height: 100; background-color: red; text-align: center; color: black;"> SEC</a></h3></i></p>
 <div align="center">
   <a href="https://github.com/elangosundar/awesome-README-templates/stargazers"><img src="https://img.shields.io/github/stars/elangosundar/awesome-README-templates" alt="Stars Badge"/></a>
