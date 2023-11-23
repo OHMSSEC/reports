@@ -53,9 +53,9 @@ Nesse ponto, você deve saber qual sistema de template está sendo usado para fa
 
     Ruby
 
-- Injeções básicas em ERB
+Injeções básicas em ERB:
 
-<%= 7 * 7 %>
+   <%= 7 * 7 %>
 
 - Injeções básicas em ERB
 
