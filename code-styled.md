@@ -11,11 +11,33 @@
 <br>
 <p align="center"><i>Loved the project? Please visit our <a href=https://www.ohmsec.com.br/">Website</a></i></p>
 <br>
-This repo aims to collect the all `awesome beautiful READMEs profile` and make your Profile look good & Inspire other's.
+Os mecanismos de templates são frequentemente usados em serviços web, tornando a criação do design das páginas HTML mais fácil, deixando o envio das informações de maneira mais simples e organizadas. Quando esses templates não são configurados da forma correta, acaba que a entrada do usuário é passada em modelos e não como dados, permitindo assim a injeção de comandos que acaba se tornando uma vulnerabilidade crítica e que facilmente pode ser confundido com um Cross-Site Scripting (XSS) ou passar despercebida, já que a pessoa testou apenas o XSS. Mas ao contrário do XSS, o SSTI pode ser usado para atacar diretamente os servidores internos da página web, onde podemos obter um Remote Code Execution (RCE). Principais templates usados:
 
-If you are intersted, will create a PR for to add your `README` profile here.
+No PHP:
 
-If you like this Repo, Please click the :star:
+    Plates;
+    Blade;
+    Twig.
 
-List of `awesome README Profile` categories mentioned below
+No JavaScript:
 
+    Mustache;
+    Handlebars;
+    doT;
+    EJS;
+    PUG;
+    Jade Language;
+    Squirrelly.
+
+No Python:
+
+    Django Template;
+    Genshi;
+    Jinja;
+    Mako.
+
+No Java:
+
+    Java Server Pages (JSP);
+    Thymeleaf;
+    FreeMarker.
