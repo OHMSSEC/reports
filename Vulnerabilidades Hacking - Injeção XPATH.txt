@@ -1,0 +1,77 @@
+Injeção XPATH
+
+Descrição
+
+Semelhante a Injeção SQL, ataques de injeção XPath ocorrem quando um site utiliza informações fornecidas pelo usuário para a construção de uma consulta XPath para dados XML. Através do envio de informações intencionalmente mal formado no site, um atacante pode descobrir como os dados XML são estruturados, ou dados de acesso que ele não pode normalmente ter acesso. Ele pode até mesmo ser capaz de elevar seus privilégios no site se os dados XML estão sendo usados para autenticação (como um arquivo de usuário baseada em XML).
+Consultando XML é feito com XPath, um tipo de declaração descritiva simples que permite a consulta XML para localizar um pedaço de informação. Como SQL, você pode especificar certos atributos para encontrar e padrões para combinar. Ao utilizar XML para um web site é comum aceitar alguma forma de entrada na string de consulta para identificar o conteúdo para localizar e exibir na página. Esta entrada deve ser higienizada para verificar se ela não atrapalha a consulta XPath e retorna os dados errados.
+XPath é uma linguagem padrão, a sua notação / sintaxe é sempre uma implementação independente, o que significa que o ataque pode ser automatizado. Não há dialetos diferentes, como ocorre em pedidos para o databeses SQL.
+Porque não há nenhum controle de acesso de nível é possível obter o documento inteiro. Nós não encontramos  quaisquer limitações quanto podemos saber a partir de ataques de injeção SQL.
+
+Exemplos
+
+Usaremos este trecho xml para os exemplos.
+
+
+<?xml version="1.0" encoding="utf-8"?>
+<Employees>
+   <Employee ID="1">
+      <FirstName>Arnold</FirstName>
+      <LastName>Baker</LastName>
+      <UserName>ABaker</UserName>
+      <Password>SoSecret</Password>
+      <Type>Admin</Type>
+   </Employee>
+   <Employee ID="2">
+      <FirstName>Peter</FirstName>
+      <LastName>Pan</LastName>
+      <UserName>PPan</UserName>
+      <Password>NotTelling</Password>
+      <Type>User</Type>
+   </Employee>
+</Employees>
+
+
+Suponha que temos um sistema de autenticação de usuário em uma página web que usou um arquivo desse tipo de dados de login de usuários. Uma vez que um nome de usuário e senha foram fornecidos o software pode usar XPath para procurar o usuário:
+
+
+VB:
+Dim FindUserXPath as String
+FindUserXPath = "//Employee[UserName/text()='" & Request("Username") & "' And 
+        Password/text()='" & Request("Password") & "']"
+
+C#:
+String FindUserXPath;
+FindUserXPath = "//Employee[UserName/text()='" + Request("Username") + "' And 
+        Password/text()='" + Request("Password") + "']";
+
+
+Com um nome de usuário e senha normal, este XPath iria funcionar, mas um atacante pode enviar um mau nome de usuário e senha e obter um nó XML selecionado sem saber o nome de usuário ou senha, como esta:
+
+
+Username: blah' or 1=1 or 'a'='a
+Password: blah
+
+FindUserXPath becomes //Employee[UserName/text()='blah' or 1=1 or 
+        'a'='a' And Password/text()='blah']
+
+Logically this is equivalent to:
+        //Employee[(UserName/text()='blah' or 1=1) or 
+        ('a'='a' And Password/text()='blah')]
+
+
+Neste caso, apenas a primeira parte do XPath deve ser verdadeira. A parte senha torna-se irrelevante, e a parte UserName irá corresponder a todos os funcionários por causa da parte "1 = 1".
+Assim como injeção de SQL, a fim de se proteger você deve escapar aspas simples (ou aspas), se o seu aplicativo usa-los.
+
+
+VB:
+Dim FindUserXPath as String
+FindUserXPath = "//Employee[UserName/text()='" & Request("Username").Replace("'", "'") & "' And 
+        Password/text()='" & Request("Password").Replace("'", "'") & "']"
+
+C#:
+String FindUserXPath;
+FindUserXPath = "//Employee[UserName/text()='" + Request("Username").Replace("'", "'") + "' And 
+        Password/text()='" + Request("Password").Replace("'", "'") + "']";
+
+
+Outro melhor opção de mitigação é usar um XPath pré-compilado. XPaths pré-compilados já estão pré-definidos antes de o programa é executado, ao invés de criado na mosca após a entrada do usuário foi adicionado à string. Esta é uma rota melhor, porque você não tem que se preocupar em perder um personagem que deveria ter sido escapado.

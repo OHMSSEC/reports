@@ -1,0 +1,41 @@
+Botnet Knock 
+
+Visão Global
+
+A Botnet de Knock não funciona como uma Botnet comum, ela funciona de uma forma especial, mais eficaz porém complexa de se usufruir. 
+
+Descrição
+
+A Botnet no caso da de Knock é um arquivo, geralmente DLL (.dll) criado mais provavelmente por um programador, com o intuito de tirar um site do ar, cortando todas as conexões ativas do site. A BNK (Botnet de Knock) quando ativada dentro de um site, pode tirá-lo do ar, para sempre, e ele pode ficar eternamente indisponível até mesmo para o Administrador do mesmo. O ataque consiste no que o autor pega o arquivo da BNK (que muda sempre de variável e função conforme o computador do atacante, o programador autor do arquivo e site alvo, então nunca há uma BNK comum que você pode baixar e usar), depois disso, ele usa algum tipo de ataque ou Injeção para invadir o banco de dados ou servidor (FTP, HOST, CLOUD etc) onde ele deixa o arquivo malicioso (também pode ser interpretado como um "vírus", apesar de não possuir a carácteristica de um, e nem ter vírus). Depois que o arquivo malicioso (BNK) é estabelecida dentro do site, o autor usa de um Injetor de DLL em execução (.exe) e ativa as funções do arquivo, que quando ativado ele corta todas as conexões com o site.
+
+Exemplos
+
+Exemplo 1 ~
+
+A seguir, veremos um scan (executado por um executador ativo em PYTHON) de um site normal antes de ter a BNK ativada dentro de si. No caso o site tem 3 conexões ativas, a do host onde ele hospeda o site (HOSTGATOR SYS NO CASO), a da hospedagem padrão onde ele elaborou o site (BLOGGER) e a conexão de domínio, onde ele mantém o site - que no caso é diferente pois não utiliza o mesmo serviço de hospedagem do site (UOL HOST):
+
+
+
+Slytherin@unix ~ > SCANNING CONNECTIONS 
+> scan.py -f 131.253.14.85 --ap [SCAN FOR 131.253.14.83 --ALLPORTS]
+
+Connection 1 131.253.14.85 - HostGator Sys  | ESTABLISHED
+Connection 2 131.253.14.85 - Blogger, Google | ESTABLISHED
+Connection 3 131.253.14.85 - UOL HOST BR | ESTABLISHED
+
+
+
+
+Agora veremos o scan do site, DEPOIS de a BNK ser ativada:
+
+
+
+Slytherin@unix ~ > SCANNING CONNECTIONS 
+> scan.py -f 131.253.14.85 --ap [SCAN FOR 131.253.14.83 --ALLPORTS]
+
+Connection 1 131.253.14.85 - HostGator Sys  | WAIT_ANS
+Connection 2 131.253.14.85 - Blogger, Google | OFFLINE
+Connection 3 131.253.14.85 - UOL HOST BR | WAIT_ANS
+
+
+Como pudemos ver, o site está aguardando conexão, que no caso não está ativa, pois o servidor principal do site (Blogger) cortou as conexões diretas com todos os outros príncipios ativos com o site e banco de dados.

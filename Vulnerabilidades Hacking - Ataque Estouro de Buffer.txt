@@ -1,0 +1,167 @@
+Ataque de estouro de buffer
+
+Descrição
+
+Erros de buffer overflow são caracterizadas pela substituição de fragmentos de memória do processo, o que nunca deveria ter sido modificados intencionalmente ou não. Substituição de valores do IP (Instruction Pointer), BP (Base Pointer) e outros registros provocam exceções, falhas de segmentação, e que outros erros ocorram. Geralmente estes erros de execução final da aplicação de uma forma inesperada. Erros de buffer overflow ocorre quando operamos em buffers do tipo char.
+Erros Bo (nome comum para este tipo de erros) são simplesmente estouro de pilha ou heap em erros de estouro. Não fazemos distinção entre estes dois neste artigo para evitar a confusão do leitor.
+A seguir exemplos são escritos em linguagem C sob o sistema GNU / Linux em arquitetura x86.
+
+Exemplo 1
+
+  #include <stdio.h>
+  int main(int argc, char **argv)
+  {
+  char buf[8]; // buffer for eight characters
+  gets(buf); // read from stdio (sensitive function!)
+  printf("%s\n", buf); // print out data stored in buf
+  return 0; // 0 as return value
+  }
+
+Esta aplicação muito simples lê da entrada padrão um array de caracteres e copia para o buffer do tipo char. O tamanho desta reserva é de oito caracteres. Depois disso, o conteúdo do buffer é exibido e sai do aplicativo.
+
+Compilação do programa:
+
+portalhacking@spin ~/inzynieria $ gcc bo-simple.c -o bo-simple
+  /tmp/ccECXQAX.o: In function `main':
+  bo-simple.c:(.text+0x17): warning: the `gets' function is dangerous and
+  should not be used.
+
+Nesta fase, mesmo que o compilador sugira que a função obtenha () não é segura.
+Exemplo de uso:
+
+ portalhacking@spin ~/inzynieria $ ./bo-simple // program start
+  1234 // we eneter "1234" string from the keyboard
+  1234 // program prints out the conent of the buffer
+  rezos@spin ~/inzynieria $ ./bo-simple // start
+  123456789012 // we eneter "123456789012"
+  123456789012 // content of the buffer "buf" ?!?!
+  Segmentation fault // information about memory segmenatation fault
+
+Nós gerenciamos, (in)felizmente para executar a operação com defeito pelo programa, e provocá-lo a sair de forma anormal.
+Análise do problema:
+
+O programa chama uma função, que opera no buffer tipo char e não faz nenhuma verificação contra estar transbordando o tamanho atribuído a esse buffer. Como resultado, é possível que, intencionalmente ou não armazene mais dados do buffer, o que vai causar um erro. Surge a seguinte questão: O buffer armazena apenas oito personagens, então por que a função printf () Exibe doze?. A resposta vem da organização da memória do processo. Quatro personagens que transbordaram do buffer também substituir o valor armazenado em um dos registros, o que era necessário para o retorno da função correta. Memória continuidade resultou em imprimir os dados armazenados na área de memória.
+
+Exemplo 2
+
+  #include <stdio.h>
+  #include <string.h>
+
+  void doit(void)
+  {
+          char buf[8];
+
+          gets(buf);
+          printf("%s\n", buf);
+  }
+
+  int main(void)
+  {
+          printf("So... The End...\n");
+          doit();
+          printf("or... maybe not?\n");
+
+          return 0;
+  }
+
+Este exemplo é análogo ao primeiro. Além disso, antes e depois da função doit (), temos duas chamadas para função printf ().
+
+ Compilation:
+
+  portalhacking@dojo-labs ~/owasp/buffer_overflow $ gcc example02.c -o example02
+  -ggdb
+  /tmp/cccbMjcN.o: In function `doit':
+  /home/rezos/owasp/buffer_overflow/example02.c:8: warning: the `gets'
+  function is dangerous and should not be used.
+
+  Usage example:
+  rezos@dojo-labs ~/owasp/buffer_overflow $ ./example02
+  So... The End...
+  TEST                   // user data on input
+  TEST                  // print out stored user data
+  or... maybe not?
+
+
+
+O programa define entre as duas chamadas printf () mostra o conteúdo da memória intermédia, que é preenchida com os dados introduzidos pelo utilizador.
+
+portalhacking@dojo-labs ~/owasp/buffer_overflow $ ./example02
+  So... The End...
+  TEST123456789
+  TEST123456789
+  Segmentation fault
+
+Porque o tamanho do buffer foi definido (char buf [8]) e foi preenchido com treze caracteres do tipo char, o buffer transbordou.
+Se o nosso pedido de binário está no formato ELF, então somos capazes de usar um programa para analisar objdump-lo e encontrar informações necessárias para explorar o erro de estouro de buffer.
+Abaixo encontra-se de saída produzido pelo objdump. Desde que a produção, somos capazes de encontrar endereços, onde printf () é chamado (0x80483d6 e 0x80483e7).
+
+ portalhacking@dojo-labs ~/owasp/buffer_overflow $ objdump -d ./example02
+
+  080483be <main>:
+   80483be:       8d 4c 24 04             lea    0x4(%esp),%ecx
+   80483c2:       83 e4 f0                and    $0xfffffff0,%esp
+   80483c5:       ff 71 fc                pushl  0xfffffffc(%ecx)
+   80483c8:       55                      push   %ebp
+   80483c9:       89 e5                   mov    %esp,%ebp
+   80483cb:       51                      push   %ecx
+   80483cc:       83 ec 04                sub    $0x4,%esp
+   80483cf:       c7 04 24 bc 84 04 08    movl   $0x80484bc,(%esp)
+   80483d6:       e8 f5 fe ff ff          call   80482d0 <puts@plt>
+   80483db:       e8 c0 ff ff ff          call   80483a0 <doit>
+   80483e0:       c7 04 24 cd 84 04 08    movl   $0x80484cd,(%esp)
+   80483e7:       e8 e4 fe ff ff          call   80482d0 <puts@plt>
+   80483ec:       b8 00 00 00 00          mov    $0x0,%eax
+   80483f1:       83 c4 04                add    $0x4,%esp
+   80483f4:       59                      pop    %ecx
+   80483f5:       5d                      pop    %ebp
+   80483f6:       8d 61 fc                lea    0xfffffffc(%ecx),%esp
+   80483f9:       c3                      ret
+   80483fa:       90                      nop
+   80483fb:       90                      nop
+
+
+Se a segunda chamada para printf () deve informar o administrador sobre o logout do usuário (por exemplo, sessão fechada), então podemos tentar omitir esta etapa e terminar sem a chamada para printf ().
+
+portalhacking@dojo-labs ~/owasp/buffer_overflow $ perl -e 'print "A"x12
+."\xf9\x83\x04\x08"' | ./example02
+So... The End...
+AAAAAAAAAAAAu*.
+Segmentation fault
+
+A aplicação terminar sua execução com falha de segmentação, mas a segunda chamada para printf () não teve lugar.
+Algumas palavras de explicação:
+perl-e 'print "A" x12 "\ XF9 \ x83 \ x04 \ x08".' - irá imprimir doze caracteres "A" e, em seguida, quatro personagens, que são na verdade um endereço da instrução que deseja executar. Por doze anos?
+
+ 8 // size of buf (char buf[8])
+  +  4 // four additional bytes for overwriting stack frame pointer
+  ----
+    12
+
+Análise do problema:
+A questão é o mesmo que no primeiro exemplo. Não existe controle sobre o tamanho do buffer de copiado para o anteriormente declarado. Neste exemplo, substituir o registo EIP com o endereço 0x080483f9, que é na verdade uma chamada para ret na última fase da execução do programa.
+Como usar erros de estouro de buffer de uma maneira diferente?
+Geralmente, a exploração desses erros pode levar a:
+* Aplicação DoS
+* Reorganização da execução de funções
+* Execução de código (se está apto a shellcode, descrita em um documento separado)
+
+Como os erros de estouro de buffer são feitos?
+Estes tipos de erros são muito fáceis de fazer. Durante anos, eles eram o pesadelo de um programador. O problema reside em funções C nativas, que não se importam em fazer verificações de comprimento tampão adequadas. Abaixo está a lista de tais funções e, se existirem, os seus equivalentes de segurança:
+
+* gets() -> fgets() - read characters
+* strcpy() -> strncpy() - copy content of the buffer
+* strcat() -> strncat() - buffer concatenation
+* sprintf() -> snprintf() - fill buffer with data of different types
+* (f)scanf() - read from STDIN
+* getwd() - return working directory
+* realpath() - return absolute (full) path
+
+Use funções equivalentes seguras, que verificam o comprimento buffers, sempre que possível. a saber:
+
+1- gets() -> fgets()
+2- strcpy() -> strncpy()
+3- strcat() -> strncat()
+4- sprintf() -> snprintf()
+
+Essas funções que não tem equivalentes seguros deve ser reescrito com verificações de segurança implementadas. Tempo gasto no que vai beneficiar no futuro. Lembre-se que você tem que fazê-lo apenas uma vez.
+Use compiladores, que são capazes de identificar as funções inseguras, erros de lógica e verifique se a memória é substituído quando e onde ele não deveria estar.
