@@ -25,11 +25,8 @@ List of `awesome README Profile` categories mentioned below
   - [List out `Awesome README Profile` Articles](#list-out-awesome-readme-profile-articles)
   - [Contribute](#contribute)
 
-## Website
 
-Link : https://www.ohmsec.com.br/
-
-<a href="https://www.ohmsec.com.br/"><img src="https://raw.githubusercontent.com/OHMSSEC/reports/ad4f5ef97c67c5ab798297e8ba3943262a123f26/banner.png" alt="Awesome README Templates" /></a>
+<img src="https://raw.githubusercontent.com/OHMSSEC/reports/ad4f5ef97c67c5ab798297e8ba3943262a123f26/banner.png" alt="Awesome README Templates" /></a>
 
 
 ## Github README PROFILE CATEGORY
